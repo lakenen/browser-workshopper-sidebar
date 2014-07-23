@@ -1,11 +1,11 @@
-var fs       = require('fs')
 var remove   = require('remove-element')
-var escape   = require('escape-html')
-var css      = require('insert-css')
-var inherits = require('inherits')
-var domify   = require('domify')
-var Emitter  = require('events').EventEmitter
+  , escape   = require('escape-html')
+  , css      = require('insert-css')
+  , inherits = require('inherits')
+  , domify   = require('domify')
+  , Emitter  = require('events').EventEmitter
 
+var fs       = require('fs')
 var style  = fs.readFileSync(__dirname + '/sidebar.css', 'utf8')
 var markup = fs.readFileSync(__dirname + '/sidebar.html', 'utf8')
 
@@ -25,16 +25,16 @@ function BrowserWorkshopperSidebar() {
   this._amount = 1
 
   this.el = document.body.appendChild(domify(markup))
-  this.content  = this.el.querySelector('.browser-workshopper-content')
-  this.statmsg  = null
+  this.content  = this.el.querySelector('.bw-sidebar-content')
+  this.statusMsgEl  = null
 
   if (style) css(style)
   style = null
 
-  var status = this.el.querySelector('.browser-workshopper-status')
-    , range  = this.el.querySelector('.browser-workshopper-amount')
-    , hide   = this.el.querySelector('.browser-workshopper-hide')
-    , test   = this.el.querySelector('.browser-workshopper-test')
+  var status = this.el.querySelector('.bw-sidebar-status')
+    , range  = this.el.querySelector('.bw-sidebar-amount')
+    , hide   = this.el.querySelector('.bw-sidebar-hide')
+    , test   = this.el.querySelector('.bw-sidebar-test')
     , self   = this
 
   this.elTest   = test
@@ -56,6 +56,17 @@ function BrowserWorkshopperSidebar() {
   }, 50)
 }
 
+BrowserWorkshopperSidebar.prototype.pass = function (msg) {
+  this.status = msg
+  this.elStatus.classList.remove('failed')
+  this.elStatus.classList.add('passed')
+}
+BrowserWorkshopperSidebar.prototype.fail = function (msg) {
+  this.status = msg
+  this.elStatus.classList.remove('passed')
+  this.elStatus.classList.add('failed')
+}
+
 Object.defineProperty(BrowserWorkshopperSidebar.prototype, 'enabled', {
   get: function() { return this._enabled },
   set: function(value) {
@@ -73,11 +84,11 @@ Object.defineProperty(BrowserWorkshopperSidebar.prototype, 'status', {
   set: function(value) {
     this._status = value = value ? String(value) : ''
 
-    if (this.statmsg) {
-      var prev = this.statmsg
-      this.statmsg.style.top = '-50%'
-      this.statmsg.style.opacity = 0
-      this.statmsg = null
+    if (this.statusMsgEl) {
+      var prev = this.statusMsgEl
+      this.statusMsgEl.style.top = '-50%'
+      this.statusMsgEl.style.opacity = 0
+      this.statusMsgEl = null
 
       setTimeout(function() {
         remove(prev)
@@ -86,9 +97,9 @@ Object.defineProperty(BrowserWorkshopperSidebar.prototype, 'status', {
 
     if (!value) return
 
-    var msg = this.statmsg = document.createElement('div')
+    var msg = this.statusMsgEl = document.createElement('div')
     msg.innerHTML = escape(value)
-    msg.classList.add('browser-workshopper-message')
+    msg.classList.add('bw-sidebar-message')
     msg.classList.add('adding')
     this.elStatus.appendChild(msg)
 
