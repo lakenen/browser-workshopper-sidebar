@@ -66,6 +66,11 @@ BrowserWorkshopperSidebar.prototype.fail = function (msg) {
   this.elStatus.classList.remove('passed')
   this.elStatus.classList.add('failed')
 }
+BrowserWorkshopperSidebar.prototype.reset = function () {
+  this.status = ''
+  this.elStatus.classList.remove('passed')
+  this.elStatus.classList.remove('failed')
+}
 
 Object.defineProperty(BrowserWorkshopperSidebar.prototype, 'enabled', {
   get: function() { return this._enabled },
